@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # 추천 시스템 애플리케이션 (MongoDB Atlas 사용)
+  app:
+    build: .
+    container_name: roommate-app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      # MongoDB 환경변수
+      - MONGO_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
+      - MONGO_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+      - MONGODB_DB_NAME=${MONGODB_DB_NAME}
+      - MONGODB_URL=${MONGODB_URL}
+      
+      # PostgreSQL 환경변수 (CloudSQL 포함)
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_USERNAME=${POSTGRES_USERNAME}
+      - POSTGRES_DB_NAME=${POSTGRES_DB_NAME}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      
+      # CloudSQL Proxy 환경변수
+      - CLOUDSQL_CONNECTION_NAME=${CLOUDSQL_CONNECTION_NAME}
+      - CLOUDSQL_USE_PROXY=${CLOUDSQL_USE_PROXY}
+      - POSTGRES_SSL_MODE=${POSTGRES_SSL_MODE}
+      - POSTGRES_USE_IAM=${POSTGRES_USE_IAM}
+      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
+      
+    volumes:
+      - ./models:/app/models:ro
+      - ./logs:/app/logs
+      # 서비스 계정 키 마운트 (CloudSQL 인증용)
+      - ./credentials:/app/credentials:ro
+
+networks:
+  roommate-network:
+    driver: bridge
